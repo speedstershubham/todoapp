@@ -13,7 +13,7 @@ const port = process.env.PORT || 2000;
 app.use(express.json())
 
 const Todo = require("./routes/Todos")
-app.use('/Todos',Todo)
+app.use('/',Todo)
 
 
 app.listen(port,()=>{ console.log(`server is started on port ${port}`)})
