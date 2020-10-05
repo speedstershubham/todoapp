@@ -8,7 +8,7 @@ mongoose.connect(process.env.DATABASE,{useNewUrlParser:true,useUnifiedTopology: 
 const db = mongoose.connection
 db.on('error',(error) => console.error(error))
 db.once('open',() => console.log('connected to Database'))
-const port = 2000;
+const port = process.env.PORT || 2000;
 
 app.use(express.json())
 
