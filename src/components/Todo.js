@@ -9,6 +9,22 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
     value: ''
   });
 
+  const updatetodo = ({todoId, newValue}) => {
+    return fetch(`https://app-todosserver.herokuapp.com/${todoId}`,{
+     method:"POST",
+     headers:{
+      Accept:"application/json",
+       "Content-Type":"application/json"
+     },
+     body:JSON.stringify(newValue)
+   })
+   .then(res =>{
+     return res.json();
+   })
+   .catch(err => console.log(err))
+ }
+
+
   const submitUpdate = value => {
     updateTodo(edit.id, value);
     setEdit({
@@ -26,16 +42,16 @@ const Todo = ({ todos, completeTodo, removeTodo, updateTodo }) => {
       className={todo.isComplete ? 'todo-row complete' : 'todo-row'}
       key={index}
     >
-      <div key={todo.id} onClick={() => completeTodo(todo.id)}>
-        {todo.text}
+      <div key={todo._id} onClick={() => completeTodo(todo._id)}>
+        {todo.Name}
       </div>
       <div className='icons'>
         <RiCloseCircleLine
-          onClick={() => removeTodo(todo.id)}
+          onClick={() => removeTodo(todo._id)}
           className='delete-icon'
         />
         <TiEdit
-          onClick={() => setEdit({ id: todo.id, value: todo.text })}
+          onClick={() => setEdit({ id: todo._id, value: todo.Name })}
           className='edit-icon'
         />
       </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-function TodoForm(props) {
-  const [input, setInput] = useState(props.edit ? props.edit.value : '');
+const TodoForm =({ edit,onSubmit})  =>{
+  const [input, setInput] = useState(edit ? edit.value : '');
 
   const inputRef = useRef(null);
 
@@ -9,29 +9,59 @@ function TodoForm(props) {
     inputRef.current.focus();
   });
 
+const formtodo = todos => {
+   return fetch(`https://app-todosserver.herokuapp.com/`,{
+    method:"POST",
+    headers:{
+     Accept:"application/json",
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify(todos)
+  })
+  .then(res =>{
+    return res.json();
+  })
+  .catch(err => console.log(err))
+}
+
   const handleChange = e => {
     setInput(e.target.value);
   };
 
+
   const handleSubmit = e => {
     e.preventDefault();
 
-    props.onSubmit({
-      id: Math.floor(Math.random() * 10000),
-      text: input
+    onSubmit({
+      Name: input
     });
+    console.log(input)
     setInput('');
+    formtodo({  Name: input })
+    .then(data =>{
+      console.log(data)
+      if(data.error){
+        setInput({...input,error:data.error})
+      }
+      else{
+        setInput({
+          ...input,
+        Name:""
+        })
+      }
+    })
+    .catch(console.log("error"))
   };
 
   return (
     <form onSubmit={handleSubmit} className='todo-form'>
-      {props.edit ? (
+      {edit ? (
         <>
           <input
             placeholder='Update your item'
             value={input}
             onChange={handleChange}
-            name='text'
+            name='newValue'
             ref={inputRef}
             className='todo-input edit'
           />
@@ -45,7 +75,7 @@ function TodoForm(props) {
             placeholder='Add a todo'
             value={input}
             onChange={handleChange}
-            name='text'
+            name='Name'
             className='todo-input'
             ref={inputRef}
           />

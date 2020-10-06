@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import TodoForm from './TodoForm';
 import Todo from './Todo';
 
-function TodoList() {
+const TodoList =({items}) => {
   const [todos, setTodos] = useState([]);
 
+  useEffect(() => {
+   if(items.length)
+   {
+     setTodos(items)
+   }
+  }, [items])
+  console.log({items})
+  
   const addTodo = todo => {
-    if (!todo.text || /^\s*$/.test(todo.text)) {
+    if (!todo.Name || /^\s*$/.test(todo.Name)) {
       return;
     }
 
@@ -16,19 +24,40 @@ function TodoList() {
     console.log(...todos);
   };
 
+
   const updateTodo = (todoId, newValue) => {
-    if (!newValue.text || /^\s*$/.test(newValue.text)) {
+    if (!newValue.Name || /^\s*$/.test(newValue.Name)) {
       return;
     }
-
     setTodos(prev => prev.map(item => (item.id === todoId ? newValue : item)));
   };
 
-  const removeTodo = id => {
-    const removedArr = [...todos].filter(todo => todo.id !== id);
-
-    setTodos(removedArr);
+  const deleteTodo = (_id) => {
+    return fetch(`https://app-todosserver.herokuapp.com/${_id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+      }
+    })
+      .then(response => {
+        return response.json();
+      })
+      .catch(err => console.log(err));
   };
+  
+  const removeTodo = _id => {
+    deleteTodo(_id).then(data => {
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        const removedArr = todos.filter(todo => todo._id !== _id);
+        setTodos(removedArr);
+      }
+    });
+  };
+
+
+
 
   const completeTodo = id => {
     let updatedTodos = todos.map(todo => {
