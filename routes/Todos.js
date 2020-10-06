@@ -54,14 +54,16 @@ router.delete('/:id',getTodos ,async (req,res) => {
   }
 })
 
-async function getTodos(res,req,next){
+
+
+async function getTodos(req,res,next){
     let todos
 try{
     todos = await Todos.findById(req.params.id)
     if(todos == null)
     return res.status(404).json({message:"cannot find todos"})
-}catch(err){
-      return res.status(500).json({message:err.message })
+}catch(err) {
+      return res.status(500).json({ message:err.message })
 } 
 res.todos = todos
 next()
