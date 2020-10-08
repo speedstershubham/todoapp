@@ -1,6 +1,8 @@
 const express =require("express")
 const router = express.Router()
 const Todos = require("../models/Todos")
+const Users = require("../models/Users")
+const{isAuthenticated} = require("../controller/auth")
 
 //getting all
 router.get('/',async (req,res) => {
@@ -14,14 +16,16 @@ try{
 
 //getting One
 router.get('/:id',getTodos ,(req,res) => {
-res.send(req.todos.Name)
+res.send(req.todos)
 })
 
 //Creating one
-router.post('/',async(req,res) => {
+router.post('/:id',getUsers,async(req,res) => {
     const todos = new Todos({
-        Name:req.body.Name  
+        Name:req.body.Name ,
+        User:req.params.id
     })
+    console.log(req.params)
     try{
    const newTodos = await todos.save()
    res.status(201).json(newTodos)
@@ -68,5 +72,21 @@ try{
 res.todos = todos
 next()
  }
+
+
+ async function getUsers(req,res,next){
+    let users
+try{
+    users = await Users.findById(req.params.id)
+    if(users == null)
+    return res.status(404).json({message:"cannot find todos"})
+}catch(err) {
+      return res.status(500).json({ message:err.message })
+} 
+res.users = users
+next()
+ }
+
+ 
 
 module.exports = router
